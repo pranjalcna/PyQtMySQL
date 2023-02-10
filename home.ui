@@ -85,14 +85,14 @@
         <item row="3" column="0" colspan="2">
          <widget class="QPushButton" name="btnAddStudent">
           <property name="text">
-           <string>PushButton</string>
+           <string>Add Student</string>
           </property>
          </widget>
         </item>
         <item row="4" column="0" colspan="2">
          <widget class="QLabel" name="lblAddStudentFeedback">
           <property name="text">
-           <string>TextLabel</string>
+           <string/>
           </property>
          </widget>
         </item>

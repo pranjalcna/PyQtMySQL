@@ -1,4 +1,6 @@
 # getStudentInfoById
+from mysql_functions import *
 
 def addStudent(fname, lname, email):
-    pass
+    sql = f"INSERT INTO `school`.`students` (`first_name`, `last_name`, `email`) VALUES ('{fname}', '{lname}', '{email}');"
+    return executeQueryAndCommit(sql)

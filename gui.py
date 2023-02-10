@@ -10,6 +10,9 @@ class MainWindow(QMainWindow):
         super().__init__()
         uic.loadUi('home.ui', self)
 
+        self.addStudentWidgetsSetup()
+
+    def addStudentWidgetsSetup(self):
         # widgets for add student
         self.lblAddStudentFeedback = self.findChild(QLabel, 'lblAddStudentFeedback')
         self.txtAddStuFName = self.findChild(QLineEdit, 'txtAddStuFName')
@@ -19,16 +22,19 @@ class MainWindow(QMainWindow):
         self.btnAddStudent.clicked.connect(self.btnAddStudentClickHandler)
 
     def btnAddStudentClickHandler(self):
-        fname = self.txtAddStuFName.text()
-        lname = self.txtAddStuLName.text()
-        email = self.txtAddStuEmail.text()
-        result = addStudent(fname, lname, email)
-        if result == 1:
-            # success
-            pass
+        try:
+            fname = self.txtAddStuFName.text()
+            assert fname != '', "First Name is mandatory"
+            lname = self.txtAddStuLName.text()
+            email = self.txtAddStuEmail.text()
+            result = addStudent(fname, lname, email)
+        except Exception as e:
+            self.lblAddStudentFeedback.setText(str(e))
         else:
-            # fail
-            pass
+            if result == 1:
+                self.lblAddStudentFeedback.setText("Student Added")
+            else:
+                self.lblAddStudentFeedback.setText("Student could not be added")
 
 
 if __name__ == '__main__':
