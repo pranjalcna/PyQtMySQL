@@ -4,7 +4,6 @@ from PyQt6 import uic
 from PyQt6.QtWidgets import *
 from controller import *
 
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -29,15 +28,21 @@ class MainWindow(QMainWindow):
         self.txtUpdateStuEmail = self.findChild(QLineEdit, 'txtUpdateStuEmail')
         self.lblModifyStuFeedback = self.findChild(QLabel, 'lblModifyStuFeedback')
         self.btnUpdateStu = self.findChild(QPushButton, 'btnUpdateStu')
+        self.btnUpdateStu.clicked.connect(self.btnUpdateStuClickHandler)
         self.btnDeleteStu = self.findChild(QPushButton, 'btnDeleteStu')
+        self.btnDeleteStu.clicked.connect(self.btnDeleteStuClickHandler)
 
         colNames, rows = getStudentIdsAndNames()
         print(colNames, rows)
         for row in rows:
             self.cboStudentInfo.addItem(row[1], userData=row[0])
         self.cboStudentInfo.currentIndexChanged.connect(self.cboStudentInfoCurrentIndexChangedHandler)
+        self.refreshStudentComboBox()
 
     def cboStudentInfoCurrentIndexChangedHandler(self):
+        self.refreshStudentComboBox()
+
+    def refreshStudentComboBox(self):
         try:
             stuId = self.cboStudentInfo.currentData()
             info = getStudentInfoById(stuId)
@@ -49,7 +54,42 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(e)
 
+    def btnUpdateStuClickHandler(self):
+        sid = self.txtUpdateStuId.text()
+        fname = self.txtUpdateStuFname.text()
+        lname = self.txtUpdateStuLName.text()
+        email = self.txtUpdateStuEmail.text()
+        result = updateStudent(sid, fname, lname, email)
+        if result == 1:
+            self.lblModifyStuFeedback.setText('Success')
+        else:
+            self.lblModifyStuFeedback.setText('Failure')
+    def btnDeleteStuClickHandler(self):
+        try:
+            fname = self.txtUpdateStuFname.text()
+            lname = self.txtUpdateStuLName.text()
 
+            msg = QMessageBox(self)
+            msg.setWindowTitle("Delete Confirmation")
+            msg.setText(f"Are you sure you want to delete {fname} {lname}")
+            msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            msg.setIcon(QMessageBox.Icon.Question)
+            button = msg.exec()
+            if button == QMessageBox.StandardButton.Yes:
+                sid = self.txtUpdateStuId.text()
+                result = deleteStudentById(sid)
+                if result == 1:
+                    self.lblModifyStuFeedback.setText('Success')
+                else:
+                    self.lblModifyStuFeedback.setText('Failure')
+            elif button == QMessageBox.StandardButton.No:
+                self.lblModifyStuFeedback.setText('Delete Cancelled')
+
+
+        except Exception as e:
+            if "1451 (23000): " in str(e):
+                self.lblModifyStuFeedback.setText('First Delete Enrollments')
+        # self.refreshStudentComboBox()
 
     def displayDataInTable(self, columns, rows, table:QTableWidget):
         """
