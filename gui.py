@@ -14,10 +14,41 @@ class MainWindow(QMainWindow):
 
         self.initializeAllStudentsTable()
 
+        self.initializeUpdateStudentWidgets()
+
     def initializeAllStudentsTable(self):
         self.tblAllStudents = self.findChild(QTableWidget, 'tblAllStudents')
         colNames, data = getAllStudents()
         self.displayDataInTable(colNames, data, self.tblAllStudents)
+
+    def initializeUpdateStudentWidgets(self):
+        self.cboStudentInfo = self.findChild(QComboBox, 'cboStudentInfo')
+        self.txtUpdateStuId = self.findChild(QLineEdit, 'txtUpdateStuId')
+        self.txtUpdateStuFname = self.findChild(QLineEdit, 'txtUpdateStuFname')
+        self.txtUpdateStuLName = self.findChild(QLineEdit, 'txtUpdateStuLName')
+        self.txtUpdateStuEmail = self.findChild(QLineEdit, 'txtUpdateStuEmail')
+        self.lblModifyStuFeedback = self.findChild(QLabel, 'lblModifyStuFeedback')
+        self.btnUpdateStu = self.findChild(QPushButton, 'btnUpdateStu')
+        self.btnDeleteStu = self.findChild(QPushButton, 'btnDeleteStu')
+
+        colNames, rows = getStudentIdsAndNames()
+        print(colNames, rows)
+        for row in rows:
+            self.cboStudentInfo.addItem(row[1], userData=row[0])
+        self.cboStudentInfo.currentIndexChanged.connect(self.cboStudentInfoCurrentIndexChangedHandler)
+
+    def cboStudentInfoCurrentIndexChangedHandler(self):
+        try:
+            stuId = self.cboStudentInfo.currentData()
+            info = getStudentInfoById(stuId)
+            print("info",info)
+            self.txtUpdateStuId.setText(str(info['sid']))
+            self.txtUpdateStuFname.setText(info['fname'])
+            self.txtUpdateStuLName.setText(info['lname'])
+            self.txtUpdateStuEmail.setText(info['email'])
+        except Exception as e:
+            print(e)
+
 
 
     def displayDataInTable(self, columns, rows, table:QTableWidget):
@@ -30,6 +61,9 @@ class MainWindow(QMainWindow):
             row = rows[i]
             for j in range(len(row)): # once for each cell in a given row
                 table.setItem(i, j, QTableWidgetItem(str(row[j])))
+        columns = ['ID', 'First Name', 'Last Name', 'Email']
+        for i in range(table.columnCount()):
+            table.setHorizontalHeaderItem(i, QTableWidgetItem(f'{columns[i]}'))
 
 
 
