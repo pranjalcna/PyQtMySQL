@@ -12,6 +12,27 @@ class MainWindow(QMainWindow):
 
         self.addStudentWidgetsSetup()
 
+        self.initializeAllStudentsTable()
+
+    def initializeAllStudentsTable(self):
+        self.tblAllStudents = self.findChild(QTableWidget, 'tblAllStudents')
+        colNames, data = getAllStudents()
+        self.displayDataInTable(colNames, data, self.tblAllStudents)
+
+
+    def displayDataInTable(self, columns, rows, table:QTableWidget):
+        """
+        Displays the data in the rows in the table provided
+        """
+        table.setRowCount(len(rows))
+        table.setColumnCount(len(columns))
+        for i in range(len(rows)): # once for each row
+            row = rows[i]
+            for j in range(len(row)): # once for each cell in a given row
+                table.setItem(i, j, QTableWidgetItem(str(row[j])))
+
+
+
     def addStudentWidgetsSetup(self):
         # widgets for add student
         self.lblAddStudentFeedback = self.findChild(QLabel, 'lblAddStudentFeedback')
